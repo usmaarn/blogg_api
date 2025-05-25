@@ -1,28 +1,13 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
-	"net/http"
-
-	"github.com/usmaarn/blogg_api/internals/middlewares"
-	"github.com/usmaarn/blogg_api/internals/router"
+	"github.com/usmaarn/blogg_api/cmd/config"
+	"github.com/usmaarn/blogg_api/internal/router"
+	"github.com/usmaarn/blogg_api/package/validators"
 )
 
 func main() {
-
-	r := router.NewRouter()
-
-	r.Use(middlewares.Logger)
-
-	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode("Hello from homepage")
-	})
-
-	// r.HandleFunc("POST /uploade", func(w http.ResponseWriter, r *http.Request) {
-
-	// })
-
-	log.Fatal(r.Run(":8080"))
+	config.Load()
+	validators.InitializeValidator()
+	router.Initialize(":8080")
 }
