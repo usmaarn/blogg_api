@@ -3,33 +3,52 @@ package handler
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/usmaarn/blogg_api/internal/dto"
 	"github.com/usmaarn/blogg_api/internal/service"
 	"github.com/usmaarn/blogg_api/package/utils"
 	"github.com/usmaarn/blogg_api/package/utils/response"
-	"github.com/usmaarn/blogg_api/package/validators"
 )
 
-func RegisterUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+func RegisterHandler(c *gin.Context) {
 	var requestDto dto.CreateUserDto
-	err := utils.BindJSON(r.Body, &requestDto)
-	if err != nil {
-		response.ErrorResponse(w, http.StatusBadRequest, err.Error(), nil)
+	if err := c.ShouldBindJSON(&requestDto); err != nil {
+		c.JSON(http.StatusBadRequest, utils.ValidateJson(err, requestDto))
 		return
 	}
 
-	errorMap, err := validators.ValidateStruct(requestDto)
+	session, err := service.RegisterUser(requestDto)
 	if err != nil {
-		response.ErrorResponse(w, http.StatusBadRequest, "", errorMap)
+		c.JSON(http.StatusBadRequest, response.ErrorResponse(err.Error(), nil))
 		return
 	}
 
-	user, err := service.CreateUser(requestDto)
-	if err != nil {
-		response.ErrorResponse(w, http.StatusBadRequest, err.Error(), nil)
+	c.JSON(http.StatusCreated, response.SuccessResponse("", session))
+}
+
+func LoginHandler(c *gin.Context) {
+	var dto dto.LoginDto
+	if err := c.ShouldBindJSON(&dto); err != nil {
+		c.JSON(http.StatusBadRequest, utils.ValidateJson(err, dto))
 		return
 	}
 
-	response.SuccessResponse(w, http.StatusCreated, "", user)
+	user, err := service.FindUserByEmail(dto.EmailAddress)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse("invalid email or password", nil))
+		return
+	}
+
+	if isCorrectPassword := utils.VerifyPassword(dto.Password, user.Password); !isCorrectPassword {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse("invalid email or password", nil))
+		return
+	}
+
+	session, err := service.CreateSession(user.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.ErrorResponse("invalid email or password", nil))
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse("created", session))
 }

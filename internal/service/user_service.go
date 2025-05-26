@@ -2,49 +2,42 @@ package service
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/usmaarn/blogg_api/cmd/config"
 	"github.com/usmaarn/blogg_api/internal/dto"
-	entity "github.com/usmaarn/blogg_api/internal/entity"
+	model "github.com/usmaarn/blogg_api/internal/models"
 	"github.com/usmaarn/blogg_api/package/enum"
 	"github.com/usmaarn/blogg_api/package/utils"
 )
 
-func CreateUser(dto dto.CreateUserDto) (entity.User, error) {
+func CreateUser(dto dto.CreateUserDto) (model.User, error) {
 	hashedPassword, err := utils.HashPassword(dto.Password)
 	if err != nil {
-		return entity.User{}, err
+		return model.User{}, err
 	}
 
-	var user = entity.User{
+	user := model.User{
 		Name:         fmt.Sprintf("%s %s", dto.FirstName, dto.LastName),
 		EmailAddress: dto.Email,
 		PhoneNumber:  dto.PhoneNumber,
-		Type:         enum.UserTypeBasic,
-		Status:       enum.UserStatusActive,
+		Type:         strconv.Itoa(enum.UserTypeBasic),
+		Status:       strconv.Itoa(enum.UserStatusActive),
 		Password:     hashedPassword,
 	}
 
-	row := config.DB.QueryRow(
-		`INSERT INTO users (name, email, phone_number, type, status, password)
-			VALUES ($1, $2, $3, $4, $5, $6)
-			RETURNING id;`,
-		user.Name, user.EmailAddress, user.PhoneNumber, user.Type, user.Status, user.Password,
-	)
-
-	var userId int64
-	err = row.Scan(&userId)
-	if err != nil {
-		return entity.User{}, err
-	}
-	return GetUserById(userId)
+	result := config.DB.Create(&user)
+	return user, result.Error
 }
 
-func GetUserById(userId int64) (entity.User, error) {
-	var user entity.User
-	err := config.DB.Select(&user, "SELECT * FROM users WHERE id = $1", userId)
-	if err != nil {
-		return entity.User{}, err
-	}
-	return user, nil
+func FindUserById(userId uint) (model.User, error) {
+	var user model.User
+	result := config.DB.First(&user)
+	return user, result.Error
+}
+
+func FindUserByEmail(email string) (model.User, error) {
+	var user model.User
+	result := config.DB.Where("email = ?", email).First(&user)
+	return user, result.Error
 }

@@ -3,11 +3,12 @@ package config
 import (
 	"fmt"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func initializeDB() (*sqlx.DB, error) {
+func initializeDB() (*gorm.DB, error) {
 	connStr := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		Config.DB_HOST,
@@ -17,5 +18,5 @@ func initializeDB() (*sqlx.DB, error) {
 		Config.DB_NAME,
 		Config.DB_SSL_MODE,
 	)
-	return sqlx.Connect("postgres", connStr)
+	return gorm.Open(postgres.Open(connStr), &gorm.Config{})
 }

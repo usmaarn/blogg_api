@@ -1,15 +1,14 @@
 package router
 
 import (
-	"github.com/go-chi/chi/v5"
+	"github.com/gin-gonic/gin"
 	"github.com/usmaarn/blogg_api/internal/handler"
 )
 
-func V1Router(r chi.Router) {
+func V1Router(router *gin.Engine) {
 	//Authentication
-	r.Route("/auth", func(r chi.Router) {
-		r.Post("/register", handler.RegisterUser)
-	})
-
+	r := router.Group("/v1")
+	r.POST("/auth/register", handler.RegisterHandler)
+	r.POST("/auth/login", handler.LoginHandler)
 	//
 }

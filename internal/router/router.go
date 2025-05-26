@@ -1,19 +1,18 @@
 package router
 
 import (
-	"net/http"
-
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gin-gonic/gin"
+	"github.com/usmaarn/blogg_api/internal/handler"
 )
 
 func Initialize(addr string) {
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
+	r := gin.Default()
+	r.Use(gin.Logger())
+	r.Use(handler.PanicHandler())
+	r.Use(handler.ErrorHandler())
 
 	//V1 Routes
-	r.Route("/v1", V1Router)
+	V1Router(r)
 
-	http.ListenAndServe(addr, r)
+	r.Run(addr)
 }

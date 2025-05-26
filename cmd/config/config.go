@@ -3,11 +3,11 @@ package config
 import (
 	"log"
 
-	"github.com/jmoiron/sqlx"
+	"gorm.io/gorm"
 )
 
 var Config AppConfig
-var DB *sqlx.DB
+var DB *gorm.DB
 
 func Load() {
 	var err error
@@ -21,4 +21,6 @@ func Load() {
 	if err != nil {
 		log.Fatal("Error connecting to database", err)
 	}
+
+	InitializeValidator()
 }

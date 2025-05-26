@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users(
   email_verified_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT now(),
   updated_at TIMESTAMP DEFAULT now(),
+  deleted_at TIMESTAMP,
 
   CONSTRAINT unique_users_email UNIQUE (email),
   CONSTRAINT unique_users_username UNIQUE (username),
