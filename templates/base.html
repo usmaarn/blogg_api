@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blogg | {{template "title" . }}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@5"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <link rel="stylesheet" href="/assets/css/app.css" />
+  </head>
+  <body class="flex flex-col min-h-screen">
+    <header
+      class="flex items-center w-full justify-between px-5 h-16 mb-8 max-w-screen-lg mx-auto"
+    >
+      <a href="/" class="text-xl font-bold text-primary">Blogg</a>
+
+      <form
+        action="/search"
+        class="flex items-center bg-base-200 rounded-sm focus-within:border rounded-md p-2 w-full max-w-96"
+      >
+        <input
+          type="search"
+          placeholder="Search..."
+          class="border-0 focus:outline-0 flex-grow"
+        />
+        <button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="m21 21l-4.343-4.343m0 0A8 8 0 1 0 5.343 5.343a8 8 0 0 0 11.314 11.314"
+            />
+          </svg>
+        </button>
+      </form>
+      <div class="flex items-center gap-5">
+        <a href="/login">Login</a>
+        <a href="/register" class="btn btn-primary">Register</a>
+        <a href="/create-post" class="btn btn-primary">Create Post</a>
+      </div>
+    </header>
+    <main class="flex-grow">{{template "body" .}}</main>
+    <footer class="bg-base-200">
+      <div class="max-w-screen-lg mx-auto py-8 px-5">
+        <p class="text-center text-sm">
+          &copy; <span id="site-year"></span> | All Rights Reserved
+        </p>
+      </div>
+    </footer>
+    <!-- script -->
+    {{template "scripts"}}
+    <script src="/assets/js/app.js"></script>
+  </body>
+</html>

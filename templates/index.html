@@ -1,0 +1,47 @@
+{{define "title"}} Homepage {{end}} {{define "scripts"}} {{end}} {{define
+"body"}}
+<div class="grid grid-cols-4 gap-5 max-w-screen-lg mx-auto">
+  <div class="p-5 bg-base-200 rounded-md"></div>
+  <div class="col-span-2">
+    {{if gt (len .Errors) 0}}
+    <div role="alert" class="alert alert-error alert-soft">
+      <ul>
+        {{range .Errors}}
+        <li>{{.}}</li>
+        {{end}}
+      </ul>
+      </div>
+      {{else}} {{if gt (len .Data) 0}}
+      <ul class="list bg-base-100 rounded-box shadow-md">
+        <li class="p-4 pb-2 text-xs opacity-60 tracking-wide border-b border-base-300">
+          Top Feed
+        </li>
+
+       {{range .Data}}
+       <li class="list-row">
+        <div>
+          <img
+            class="size-10 rounded-box"
+            src="https://img.daisyui.com/images/profile/demo/1@94.webp"
+          />
+        </div>
+        <div>
+          <div>Dio Lupa</div>
+          <div class="text-xs uppercase font-semibold opacity-60">
+            Remaining Reason
+          </div>
+        </div>
+        <h6 class="list-col-wrap font-medium text-lg">
+          {{.Title}}
+        </h6>
+      </li>
+       {{end}}
+      </ul>
+      {{else}}
+      <p>No Posts found...</p>
+      {{end}} {{end}}
+    </div>
+    <div class="p-5 bg-base-200 rounded-md">Sidebar right</div>
+  </div>
+  {{end}}
+</div>
